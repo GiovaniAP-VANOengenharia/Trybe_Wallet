@@ -9,6 +9,11 @@ export const addUser = (xablau) => ({
   xablau,
 });
 
+export const changeEditor = (xablau) => ({
+  type: EXPENSES_DATA,
+  xablau,
+});
+
 const getCurrenciesSuccess = (xablau) => ({
   type: GET_CURRENCIES_SUCCESS,
   xablau,
@@ -17,7 +22,7 @@ const getCurrenciesSuccess = (xablau) => ({
 export const expensesData = (xablau) => {
   const totalArray = xablau.expenses
     .map((item) => Number(item.value) * Number(item.exchangeRates[item.currency].ask));
-  const total = totalArray.reduce((acc, curr) => acc + curr);
+  const total = totalArray.reduce((acc, curr) => (acc + curr), 0);
   return {
     type: EXPENSES_DATA,
     xablau: { ...xablau, total },

@@ -1,8 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { changeEditor, expensesData } from '../redux/actions';
 
 class Table extends Component {
+  handleClick = (event, bill) => {
+    const { dispatch, expenses } = this.props;
+    if (event.target.name === 'Excluir') {
+      const array = expenses.filter((disp) => disp.id !== bill.id);
+      dispatch(expensesData({ expenses: array }));
+    }
+    if (event.target.name === 'Editar') {
+      dispatch(changeEditor({ editor: true, idToEdit: bill.id }));
+    }
+  };
+
   render() {
     const { expenses } = this.props;
     return (
@@ -37,6 +49,24 @@ class Table extends Component {
                   }
                 </td>
                 <td>{bill.exchangeRates[bill.currency].name}</td>
+                <td>
+                  <button
+                    type="button"
+                    name="Editar"
+                    data-testid="edit-btn"
+                    onClick={ (event) => this.handleClick(event, bill) }
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    name="Excluir"
+                    data-testid="delete-btn"
+                    onClick={ (event) => this.handleClick(event, bill) }
+                  >
+                    Excluir
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -53,7 +83,6 @@ function mapStateToProps(state) {
 
 Table.propTypes = {
   expenses: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  // dispatch: PropTypes.func.isRequired,
-  // currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 export default connect(mapStateToProps)(Table);

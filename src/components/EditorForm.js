@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getCurrenciesThunk, expensesData, changeEditor } from '../redux/actions';
+import { getCurrenciesThunk, expensesData } from '../redux/actions';
 
 class WalletForm extends Component {
   constructor() {
@@ -13,7 +13,6 @@ class WalletForm extends Component {
       method: 'Dinheiro',
       tag: 'Alimentação',
       description: '',
-      stateEditor: false,
     };
   }
 
@@ -23,61 +22,31 @@ class WalletForm extends Component {
     this.setState({ currency: 'USD' });
   }
 
-  componentDidUpdate() {
-    const { dispatch, editor } = this.props;
-    if (editor) {
-      this.setState({ stateEditor: true });
-      dispatch(changeEditor({ editor: false }));
-      this.stateEdit();
-    }
-  }
-
-  stateEdit = () => {
-    const { expenses, idToEdit } = this.props;
-    const dispesa = expenses.find((bill) => bill.id === idToEdit);
-    const { value, currency, method, tag, description } = dispesa;
-    this.setState({
-      valor: value,
-      currency,
-      method,
-      tag,
-      description,
-    });
-  };
-
   handleChange = ({ target }) => {
     const { name, value } = target;
     this.setState({ [name]: value });
   };
 
-  handleClick = (event) => {
-    event.preventDefault();
-    const { valor, currency, method, tag, description, stateEditor } = this.state;
-    const { dispatch, expenses, exchangeRates, idToEdit } = this.props;
-    const despesa = {
+  handleClick = () => {
+    const { valor, currency, method, tag, description } = this.state;
+    const { dispatch, expenses, exchangeRates } = this.props;
+    const id = expenses.length;
+    const array = [...expenses, {
       value: valor,
       currency,
       method,
       tag,
       description,
       exchangeRates,
-      id: stateEditor ? idToEdit : expenses.length,
-    };
-    let array = [];
-    if (stateEditor) {
-      array = [...expenses];
-      const arrayIndex = array.indexOf(expenses.find((bill) => bill.id !== idToEdit));
-      array[arrayIndex] = despesa;
-    } else {
-      array = [...expenses, despesa];
-      dispatch(getCurrenciesThunk());
-    }
-    this.setState({ valor: '', description: '', stateEditor: false });
+      id,
+    }];
+    this.setState({ valor: '', description: '' });
     dispatch(expensesData({ expenses: array }));
+    dispatch(getCurrenciesThunk());
   };
 
   render() {
-    const { valor, currency, method, tag, description, stateEditor } = this.state;
+    const { valor, currency, method, tag, description } = this.state;
     const { currencies } = this.props;
     return (
       <div>
@@ -128,10 +97,10 @@ class WalletForm extends Component {
           onChange={ this.handleChange }
         />
         <button
-          type="submit"
+          type="button"
           onClick={ this.handleClick }
         >
-          { stateEditor ? 'Editar despesa' : 'Adicionar despesa'}
+          Adicionar despesa
         </button>
       </div>
     );
@@ -153,8 +122,6 @@ function mapStateToProps(state) {
 
 WalletForm.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  editor: PropTypes.bool.isRequired,
-  idToEdit: PropTypes.number.isRequired,
   expenses: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
   exchangeRates: PropTypes.shape({}).isRequired,
