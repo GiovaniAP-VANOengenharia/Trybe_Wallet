@@ -1,4 +1,9 @@
-import { GET_CURRENCIES, GET_CURRENCIES_FAIL, GET_CURRENCIES_SUCCESS } from '../actions';
+import {
+  GET_CURRENCIES,
+  GET_CURRENCIES_FAIL,
+  GET_CURRENCIES_SUCCESS,
+  EXPENSES_DATA,
+} from '../actions';
 
 const INITIAL_STATE = {
   currencies: [],
@@ -7,9 +12,10 @@ const INITIAL_STATE = {
   idToEdit: 0,
   error: null,
   loading: false,
+  total: 0,
 };
 
-const walletReducer = (state = INITIAL_STATE, action) => {
+const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
   case GET_CURRENCIES_SUCCESS: {
     return {
@@ -17,6 +23,12 @@ const walletReducer = (state = INITIAL_STATE, action) => {
       ...action.xablau,
       error: null,
       loading: false,
+    };
+  }
+  case EXPENSES_DATA: {
+    return {
+      ...state,
+      ...action.xablau,
     };
   }
   case GET_CURRENCIES_FAIL: {
@@ -36,4 +48,4 @@ const walletReducer = (state = INITIAL_STATE, action) => {
   }
 };
 
-export default walletReducer;
+export default wallet;

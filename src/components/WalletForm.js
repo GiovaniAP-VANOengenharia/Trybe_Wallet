@@ -1,37 +1,55 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getCurrenciesThunk } from '../redux/actions';
+import { getCurrenciesThunk, expensesData } from '../redux/actions';
 
 class WalletForm extends Component {
   constructor() {
     super();
 
     this.state = {
-      valor: 0,
+      valor: '',
       currency: '',
-      currencies: [],
       method: 'Dinheiro',
       tag: 'Alimentação',
       description: '',
     };
   }
 
-  async componentDidMount() {
-    const { dispatch, currencies } = this.props;
-    await dispatch(getCurrenciesThunk());
-    this.setState({ currencies, currency: currencies[0] });
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(getCurrenciesThunk());
+    this.setState({ currency: 'USD' });
   }
 
   handleChange = ({ target }) => {
-    const { name, value, type } = target;
-    this.setState({ [name]: type === 'number' ? Number(value) : value });
+    const { name, value } = target;
+    this.setState({ [name]: value });
+  };
+
+  handleClick = () => {
+    const { valor, currency, method, tag, description } = this.state;
+    const { dispatch, expenses, exchangeRates } = this.props;
+    const id = expenses.length;
+    const array = [...expenses, {
+      value: valor,
+      currency,
+      method,
+      tag,
+      description,
+      exchangeRates,
+      id,
+    }];
+    this.setState({ valor: '', description: '' });
+    dispatch(expensesData({ expenses: array }));
+    dispatch(getCurrenciesThunk());
   };
 
   render() {
-    const { valor, currency, currencies, method, tag, description } = this.state;
+    const { valor, currency, method, tag, description } = this.state;
+    const { currencies } = this.props;
     return (
-      <form>
+      <div>
         <input
           type="number"
           data-testid="value-input"
@@ -78,25 +96,35 @@ class WalletForm extends Component {
           value={ description }
           onChange={ this.handleChange }
         />
-      </form>
+        <button
+          type="button"
+          onClick={ this.handleClick }
+        >
+          Adicionar despesa
+        </button>
+      </div>
     );
   }
 }
 
 function mapStateToProps(state) {
+  const { currencies, expenses, editor, idToEdit, exchangeRates, error } = state.wallet;
   return {
-    currencies: state.walletReducer.currencies,
-    expenses: state.walletReducer.expenses,
-    editor: state.walletReducer.editor,
-    idToEdit: state.walletReducer.idToEdit,
-    error: state.walletReducer.error,
+    currencies,
+    expenses,
+    editor,
+    idToEdit,
+    exchangeRates,
+    error,
     // loading: false,
   };
 }
 
 WalletForm.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  currencies: PropTypes.shape([]).isRequired,
+  expenses: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
+  exchangeRates: PropTypes.shape({}).isRequired,
 };
 
 export default connect(mapStateToProps)(WalletForm);
