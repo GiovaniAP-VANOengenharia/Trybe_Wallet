@@ -7,11 +7,11 @@ class Table extends Component {
   handleClick = (event, bill) => {
     const { dispatch, expenses } = this.props;
     if (event.target.name === 'Excluir') {
-      let array = expenses.filter((disp) => disp.id !== bill.id);
-      array = array.map((item, i) => ({ ...item, id: i }));
+      const array = expenses.filter((disp) => disp.id !== bill.id);
       dispatch(expensesData({ expenses: array }));
     }
     if (event.target.name === 'Editar') {
+      console.log('apareci');
       dispatch(changeEditor({ editor: true, idToEdit: bill.id }));
     }
   };

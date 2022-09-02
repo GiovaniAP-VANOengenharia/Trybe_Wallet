@@ -64,9 +64,14 @@ class WalletForm extends Component {
       id: stateEditor ? idToEdit : expenses.length,
     };
     let array = [];
+    let array2 = [];
     if (stateEditor) {
       const arr = expenses.filter((bill) => bill.id !== idToEdit);
       array = [...arr, despesa];
+      array2 = [...arr, despesa];
+      array2.forEach((bill, index) => {
+        array[index] = array2.find((element) => index === element.id);
+      });
     } else {
       array = [...expenses, despesa];
       dispatch(getCurrenciesThunk());
