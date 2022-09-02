@@ -5,16 +5,21 @@ import { changeEditor, expensesData } from '../redux/actions';
 
 class Table extends Component {
   handleClick = (event, bill) => {
-    const { dispatch, expenses } = this.props;
-    if (event.target.name === 'Excluir') {
-      const array = expenses.filter((disp) => disp.id !== bill.id);
-      dispatch(expensesData({ expenses: array }));
-    }
-    if (event.target.name === 'Editar') {
-      console.log('apareci');
-      dispatch(changeEditor({ editor: true, idToEdit: bill.id }));
-    }
+    if (event.target.name === 'Excluir') this.toDelete(bill);
+    if (event.target.name === 'Editar') this.toEdit(bill);
   };
+  
+  toDelete = (bill) => {
+    const { dispatch, expenses } = this.props;
+    const array = expenses.filter((disp) => disp.id !== bill.id);
+    array.lenght > 0 ? dispatch(expensesData({ expenses: array }))
+    : dispatch(expensesData({ expenses: array, generalId: -1 }))
+  }
+  
+  toEdit = (bill) => {
+    const { dispatch } = this.props;
+    dispatch(changeEditor({ editor: true, idToEdit: bill.id }));
+  }
 
   render() {
     const { expenses } = this.props;

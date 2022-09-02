@@ -53,7 +53,7 @@ class WalletForm extends Component {
   handleClick = (event) => {
     event.preventDefault();
     const { valor, currency, method, tag, description, stateEditor } = this.state;
-    const { dispatch, expenses, exchangeRates, idToEdit } = this.props;
+    const { exchangeRates, idToEdit, generalId } = this.props;
     const despesa = {
       value: valor,
       currency,
@@ -61,23 +61,30 @@ class WalletForm extends Component {
       tag,
       description,
       exchangeRates,
-      id: stateEditor ? idToEdit : expenses.length,
+      id: stateEditor ? idToEdit : generalId + 1,
     };
-    let array = [];
-    let array2 = [];
-    if (stateEditor) {
-      const arr = expenses.filter((bill) => bill.id !== idToEdit);
-      array = [...arr, despesa];
-      array2 = [...arr, despesa];
-      array2.forEach((bill, index) => {
-        array[index] = array2.find((element) => index === element.id);
-      });
-    } else {
-      array = [...expenses, despesa];
-      dispatch(getCurrenciesThunk());
-    }
+    if (stateEditor) this.toEdit(despesa);
+    else this.toAdd(despesa);
     this.setState({ valor: '', description: '', stateEditor: false });
+  };
+
+  toEdit = (despesa) => {
+    const { dispatch, expenses, idToEdit } = this.props;
+    const arr = expenses.filter((bill) => bill.id !== idToEdit);
+    const array = [...arr, despesa];
+    const array2 = [...arr, despesa];
+    array2.forEach((item, index) => {
+      array[index] = array2.find((bill) => index === bill.id);
+    });
     dispatch(expensesData({ expenses: array }));
+  };
+
+  toAdd = (despesa) => {
+    const { dispatch, expenses, generalId } = this.props;
+    const array = [...expenses, despesa];
+    const addId = generalId + 1;
+    dispatch(getCurrenciesThunk());
+    dispatch(expensesData({ expenses: array, generalId: addId }));
   };
 
   render() {
@@ -143,14 +150,15 @@ class WalletForm extends Component {
 }
 
 function mapStateToProps(state) {
-  const { currencies, expenses, editor, idToEdit, exchangeRates, error } = state.wallet;
+  const { currencies, expenses, editor,
+    idToEdit, exchangeRates, generalId } = state.wallet;
   return {
     currencies,
     expenses,
     editor,
     idToEdit,
     exchangeRates,
-    error,
+    generalId,
     // loading: false,
   };
 }
@@ -158,6 +166,7 @@ function mapStateToProps(state) {
 WalletForm.propTypes = {
   dispatch: PropTypes.func.isRequired,
   editor: PropTypes.bool.isRequired,
+  generalId: PropTypes.number.isRequired,
   idToEdit: PropTypes.number.isRequired,
   expenses: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
