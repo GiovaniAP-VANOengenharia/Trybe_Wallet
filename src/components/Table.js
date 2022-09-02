@@ -8,18 +8,18 @@ class Table extends Component {
     if (event.target.name === 'Excluir') this.toDelete(bill);
     if (event.target.name === 'Editar') this.toEdit(bill);
   };
-  
+
   toDelete = (bill) => {
     const { dispatch, expenses } = this.props;
     const array = expenses.filter((disp) => disp.id !== bill.id);
-    array.lenght > 0 ? dispatch(expensesData({ expenses: array }))
-    : dispatch(expensesData({ expenses: array, generalId: -1 }))
-  }
-  
+    if (array.lenght > 0) dispatch(expensesData({ expenses: array }));
+    else dispatch(expensesData({ expenses: array, generalId: -1 }));
+  };
+
   toEdit = (bill) => {
     const { dispatch } = this.props;
     dispatch(changeEditor({ editor: true, idToEdit: bill.id }));
-  }
+  };
 
   render() {
     const { expenses } = this.props;
