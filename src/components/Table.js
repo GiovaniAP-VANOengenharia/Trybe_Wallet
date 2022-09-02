@@ -7,7 +7,8 @@ class Table extends Component {
   handleClick = (event, bill) => {
     const { dispatch, expenses } = this.props;
     if (event.target.name === 'Excluir') {
-      const array = expenses.filter((disp) => disp.id !== bill.id);
+      let array = expenses.filter((disp) => disp.id !== bill.id);
+      array = array.map((item, i) => ({ ...item, id: i }));
       dispatch(expensesData({ expenses: array }));
     }
     if (event.target.name === 'Editar') {

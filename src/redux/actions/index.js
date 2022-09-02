@@ -23,6 +23,11 @@ export const expensesData = (xablau) => {
   const totalArray = xablau.expenses
     .map((item) => Number(item.value) * Number(item.exchangeRates[item.currency].ask));
   const total = totalArray.reduce((acc, curr) => (acc + curr), 0);
+  const array = [...xablau.expenses];
+  xablau.expenses.forEach((bill, index) => {
+    array[index] = xablau.expenses.find((element) => index === element.id);
+  });
+  xablau = { ...xablau, expenses: array };
   return {
     type: EXPENSES_DATA,
     xablau: { ...xablau, total },
