@@ -1,4 +1,4 @@
-import exchangeRates from "./mockData";
+import exchangeRates from './mockData';
 
 export const mockExpenses = {
   expenses: [
