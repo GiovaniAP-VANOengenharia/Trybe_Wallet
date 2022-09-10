@@ -13,7 +13,7 @@ const INITIAL_STATE = {
   error: null,
   loading: false,
   total: 0,
-  generalId: -1,
+  generalId: 0,
 };
 
 const wallet = (state = INITIAL_STATE, action) => {

@@ -21,8 +21,8 @@ const getCurrenciesSuccess = (xablau) => ({
 
 export const expensesData = (xablau) => {
   const totalArray = xablau.expenses
-    .map((item) => Number(item.value) * Number(item.exchangeRates[item.currency].ask));
-  const total = totalArray.reduce((acc, curr) => (acc + curr), 0);
+    .map((item) => item.value * item.exchangeRates[item.currency].ask);
+  const total = totalArray.reduce((acc, curr) => (acc + Number(curr)), 0);
   return {
     type: EXPENSES_DATA,
     xablau: { ...xablau, total },
@@ -48,7 +48,6 @@ export const getCurrenciesThunk = () => async (dispatch) => {
     const response = await fetch(CURRENCIES_URL);
     const curr = await response.json();
     const currencies = Object.keys(curr).filter((code) => code !== 'USDT');
-    // const moedas = currencies.map((item) => curr[item]);
     const xablau = { currencies, exchangeRates: curr, error: null, loading: false };
 
     dispatch(getCurrenciesSuccess(xablau));

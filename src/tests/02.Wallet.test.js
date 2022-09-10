@@ -1,57 +1,144 @@
-// import React from 'react';
-// import { screen } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
-// import renderWithRouterAndRedux from '../renderWithRouterAndRedux';
-// import Wallet from '../pages/Wallet';
-// import Header from '../components/Header';
-// import Table from '../components/Table';
-// import WalletForm from '../components/WalletForm';
+import React from 'react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import renderWithRouterAndRedux from './helpers/renderWith';
+import Wallet from '../pages/Wallet';
+import { mockCurrencies, mockExpenses } from './helpers/mockExpenses';
 
-// describe('Verifica os elementos da página Login', () => {
-//   const initialState = {
-//     user: { email: 'xablau@xablau.com' },
-//   };
-//   it('Verifica se há na página a entrada para o email.', () => {
-//     renderWithRouterAndRedux(<Login />);
+describe('Verifica os elementos da página Wallet', () => {
+  const { expenses } = mockExpenses;
+  const { currencies } = mockCurrencies;
+  let initialState = {
+    user: { email: 'xablau@xablau.com' },
+    wallet: {
+      currencies,
+      expenses,
+      editor: false,
+      idToEdit: 0,
+      error: null,
+      loading: false,
+      total: 0,
+      generalId: 0,
+    },
+  };
 
-//     const emailInput = screen.getByRole('textbox', { type: 'email' });
-//     expect(emailInput).toBeInTheDocument();
-//   });
+  it('Verifica so email do usuário é exibido na página.', () => {
+    renderWithRouterAndRedux(<Wallet />);
 
-//   it('Verifica se há na página a entrada para a senha', () => {
-//     renderWithRouterAndRedux(<Login />);
+    const email = screen.getByTestId('email-field');
+    expect(email).toBeInTheDocument();
+  });
 
-//     const senhaInput = screen.getByRole('textbox', { type: 'password' });
-//     expect(senhaInput).toBeInTheDocument();
-//   });
+  it('Verifica se há na página os inputs para adicionar uma despesa', () => {
+    renderWithRouterAndRedux(<Wallet />);
 
-//   it('Verifica se há na página o botão Entrar', () => {
-//     renderWithRouterAndRedux(<Login />);
+    const valueInput = screen.getByTestId('value-input');
+    const currencySelect = screen.getByTestId('currency-input');
+    const methodSelect = screen.getByTestId('method-input');
+    const tagSelect = screen.getByTestId('tag-input');
+    const descInput = screen.getByTestId('description-input');
 
-//     const button = screen.getByRole('button', { name: 'Entrar' });
-//     expect(button.disabled).toEqual(true);
-//     expect(button).toBeInTheDocument();
-//   });
+    expect(valueInput).toBeInTheDocument();
+    expect(currencySelect).toBeInTheDocument();
+    expect(methodSelect).toBeInTheDocument();
+    expect(tagSelect).toBeInTheDocument();
+    expect(descInput).toBeInTheDocument();
+  });
 
-//   it('Verifica se o email foi salvo no estado da aplicação.', () => {
-//     const { store, history } = renderWithRouterAndRedux(<Login />, { initialState });
+  it('Verifica se há na página Wallet o botão Adicionar despesa', () => {
+    renderWithRouterAndRedux(<Wallet />);
 
-//     const emailInput = screen.getByRole('textbox', { type: 'email' });
-//     const senhaInput = screen.getByRole('textbox', { type: 'password' });
-//     const button = screen.getByRole('button', { name: 'Entrar' });
+    const button = screen.getByRole('button', { name: 'Adicionar despesa' });
+    expect(button).toBeInTheDocument();
+  });
 
-//     userEvent.type(emailInput, 'xablau@xablau.com');
-//     expect(emailInput.value).toEqual('xablau@xablau.com');
-//     userEvent.type(senhaInput, 'xablau01');
-//     userEvent.click(button);
-//     // expect(history.location.pathname).toBe('/carteira');
+  it('Verifica se a despesa foi salva no estado da aplicação.', async () => {
+    const { store } = renderWithRouterAndRedux(<Wallet />, { initialState });
 
-//     history.push('/carteira');
+    const valueInput = screen.getByTestId('value-input');
+    const currencySelect = screen.getByTestId('currency-input');
+    const methodSelect = screen.getByTestId('method-input');
+    const tagSelect = screen.getByTestId('tag-input');
+    const descInput = screen.getByTestId('description-input');
+    const button = screen.getByRole('button', { name: 'Adicionar despesa' });
 
-//     const { user } = store.getState();
-//     expect(user).toEqual({
-//       email: 'xablau@xablau.com',
-//     });
+    userEvent.type(valueInput, '10000');
+    await (waitFor(() => userEvent.selectOptions(currencySelect, 'BTC')));
+    userEvent.selectOptions(methodSelect, 'Dinheiro');
+    userEvent.selectOptions(tagSelect, 'Alimentação');
+    userEvent.type(descInput, '2 Pizzas');
+    userEvent.click(button);
 
-//   });
-// });
+    expect(valueInput.value).toEqual('10000');
+    expect(currencySelect.value).toEqual('BTC');
+    expect(methodSelect.value).toEqual('Dinheiro');
+    expect(tagSelect.value).toEqual('Alimentação');
+    expect(descInput.value).toEqual('2 Pizzas');
+
+    const { wallet } = store.getState();
+    await (waitFor(() => expect(wallet).toBe({
+      currencies,
+      expenses,
+      editor: false,
+      idToEdit: 0,
+      error: null,
+      loading: true,
+      total: 0,
+      generalId: 0,
+    })));
+  });
+
+  it('Verifica se aparece na tabela da página Wallet a despesa após adicionada e se é deletada pelo botão Excluir.', async () => {
+    renderWithRouterAndRedux(<Wallet />);
+
+    const valueInput = screen.getByTestId('value-input');
+    const currencySelect = screen.getByTestId('currency-input');
+    const methodSelect = screen.getByTestId('method-input');
+    const tagSelect = screen.getByTestId('tag-input');
+    const descInput = screen.getByTestId('description-input');
+    const buttonAdd = screen.getByRole('button', { name: 'Adicionar despesa' });
+
+    userEvent.type(valueInput, '10000');
+    await (waitFor(() => userEvent.selectOptions(currencySelect, 'BTC')));
+    userEvent.selectOptions(methodSelect, 'Dinheiro');
+    userEvent.selectOptions(tagSelect, 'Alimentação');
+    userEvent.type(descInput, '2 Pizzas');
+    userEvent.click(buttonAdd);
+
+    const buttonDel = screen.getByTestId('delete-btn');
+
+    userEvent.click(buttonDel);
+  });
+
+  it('Verifica se aparece na tabela da página Wallet a despesa após adicionada e se é editada pelo botão Editar.', async () => {
+    renderWithRouterAndRedux(<Wallet />);
+
+    const valueInput = screen.getByTestId('value-input');
+    const currencySelect = screen.getByTestId('currency-input');
+    const methodSelect = screen.getByTestId('method-input');
+    const tagSelect = screen.getByTestId('tag-input');
+    const descInput = screen.getByTestId('description-input');
+    const buttonAdd = screen.getByRole('button', { name: 'Adicionar despesa' });
+
+    userEvent.type(valueInput, '10000');
+    await (waitFor(() => userEvent.selectOptions(currencySelect, 'BTC')));
+    userEvent.selectOptions(methodSelect, 'Dinheiro');
+    userEvent.selectOptions(tagSelect, 'Alimentação');
+    userEvent.type(descInput, '2 Pizzas');
+    userEvent.click(buttonAdd);
+
+    const buttonEdit = screen.getByTestId('edit-btn');
+
+    userEvent.click(buttonEdit);
+
+    expect(valueInput.value).toEqual('10000');
+    expect(currencySelect.value).toEqual('BTC');
+    expect(methodSelect.value).toEqual('Dinheiro');
+    expect(tagSelect.value).toEqual('Alimentação');
+    expect(descInput.value).toEqual('2 Pizzas');
+
+    const btnEditBill = screen.getByRole('button', { name: 'Editar despesa' });
+
+    userEvent.click(btnEditBill);
+  });
+});

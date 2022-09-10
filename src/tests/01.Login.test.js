@@ -2,7 +2,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
-import renderWithRouterAndRedux from '../renderWithRouterAndRedux';
+import renderWithRouterAndRedux from './helpers/renderWith';
 import Login from '../pages/Login';
 
 describe('Verifica os elementos da página Login', () => {
@@ -28,26 +28,18 @@ describe('Verifica os elementos da página Login', () => {
   });
 
   it('Verifica se o email foi salvo no estado da aplicação.', () => {
-    const email = 'xablau@xablau.com';
-    const initialState = {
-      user: { email },
-    };
-    const { store, history } = renderWithRouterAndRedux(<Login />, { initialState, initialEntries: ['/'] });
+    const { history } = renderWithRouterAndRedux(<App />);
+    const emailTyped = 'xablau@xablau.com';
 
     const emailInput = screen.getByTestId('email-input');
     const senhaInput = screen.getByTestId('password-input');
     const button = screen.getByRole('button', { name: 'Entrar' });
-    userEvent.type(emailInput, email);
-    expect(emailInput.value).toEqual(email);
+    userEvent.type(emailInput, emailTyped);
+    expect(emailInput.value).toEqual(emailTyped);
     userEvent.type(senhaInput, 'xablau');
     expect(senhaInput.value).toEqual('xablau');
     expect(button.disabled).toEqual(false);
     userEvent.click(button);
-    expect(history.location.pathname).toBe('/');
-
-    const { user } = store.getState();
-    expect(user).toEqual({
-      email,
-    });
+    expect(history.location.pathname).toBe('/carteira');
   });
 });

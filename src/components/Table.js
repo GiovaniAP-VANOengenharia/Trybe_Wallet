@@ -13,7 +13,7 @@ class Table extends Component {
     const { dispatch, expenses } = this.props;
     const array = expenses.filter((disp) => disp.id !== bill.id);
     if (array.lenght > 0) dispatch(expensesData({ expenses: array }));
-    else dispatch(expensesData({ expenses: array, generalId: -1 }));
+    else dispatch(expensesData({ expenses: array, generalId: 0 }));
   };
 
   toEdit = (bill) => {

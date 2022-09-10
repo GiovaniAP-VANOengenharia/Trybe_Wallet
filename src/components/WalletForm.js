@@ -61,7 +61,7 @@ class WalletForm extends Component {
       tag,
       description,
       exchangeRates,
-      id: stateEditor ? idToEdit : generalId + 1,
+      id: stateEditor ? idToEdit : generalId,
     };
     if (stateEditor) this.toEdit(despesa);
     else this.toAdd(despesa);
