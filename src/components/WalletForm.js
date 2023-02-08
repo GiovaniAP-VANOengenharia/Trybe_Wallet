@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getCurrenciesThunk, expensesData, changeEditor } from '../redux/actions';
+import { changeEditor, expensesData, getCurrenciesThunk } from '../redux/actions';
+import '../styles/Wallet.css';
 
 class WalletForm extends Component {
   constructor() {
@@ -14,6 +15,8 @@ class WalletForm extends Component {
       tag: 'Alimentação',
       description: '',
       stateEditor: false,
+      className: 'walletButton',
+      clicked: false,
     };
   }
 
@@ -25,10 +28,19 @@ class WalletForm extends Component {
 
   componentDidUpdate() {
     const { dispatch, editor } = this.props;
+    const { clicked } = this.state;
     if (editor) {
       this.setState({ stateEditor: true });
       dispatch(changeEditor({ editor: false }));
       this.stateEdit();
+    }
+    if (clicked) {
+      const TIME = 200;
+      const timer = setInterval(() => {
+        this.setState({ className: 'walletButton', clicked: false }, () => {
+          clearInterval(timer);
+        });
+      }, TIME);
     }
   }
 
@@ -65,22 +77,25 @@ class WalletForm extends Component {
     };
     if (stateEditor) this.toEdit(despesa);
     else this.toAdd(despesa);
-    this.setState({ valor: '', description: '', stateEditor: false });
+    this.setState({ valor: '',
+      description: '',
+      stateEditor: false,
+      className: 'walletButton clicked',
+      clicked: true });
   };
 
   toEdit = (despesa) => {
     const { dispatch, expenses, idToEdit } = this.props;
     const arr = expenses.filter((bill) => bill.id !== idToEdit);
-    const array = [...arr, despesa];
-    const array2 = [...arr, despesa];
-    array2.forEach((item, index) => {
-      array[index] = array2.find((bill) => index === bill.id);
-    });
+    let array = [...arr, despesa];
+    array = array.sort((a, b) => a.id - b.id);
     dispatch(expensesData({ expenses: array }));
+    this.setState({ className: 'walletButton' });
   };
 
   toAdd = (despesa) => {
     const { dispatch, expenses, generalId } = this.props;
+    this.setState({ className: 'walletButton' });
     const array = [...expenses, despesa];
     const addId = generalId + 1;
     dispatch(getCurrenciesThunk());
@@ -88,20 +103,28 @@ class WalletForm extends Component {
   };
 
   render() {
-    const { valor, currency, method, tag, description, stateEditor } = this.state;
+    const { valor, currency, method, tag,
+      description, stateEditor, className } = this.state;
     const { currencies } = this.props;
     return (
-      <div>
-        <input
-          type="number"
-          data-testid="value-input"
-          name="valor"
-          value={ valor }
-          onChange={ this.handleChange }
-        />
+      <div className="walletDiv">
+        <label htmlFor="valor" className="walletLabel">
+          Valor:
+          <input
+            type="number"
+            id="valor"
+            data-testid="value-input"
+            className="walletInputs"
+            placeholder="Digite o valor"
+            name="valor"
+            value={ valor }
+            onChange={ this.handleChange }
+          />
+        </label>
         <select
           data-testid="currency-input"
           name="currency"
+          className="walletSelects"
           value={ currency }
           onChange={ this.handleChange }
         >
@@ -112,6 +135,7 @@ class WalletForm extends Component {
         <select
           data-testid="method-input"
           name="method"
+          className="walletSelects"
           value={ method }
           onChange={ this.handleChange }
         >
@@ -122,6 +146,7 @@ class WalletForm extends Component {
         <select
           data-testid="tag-input"
           name="tag"
+          className="walletSelects"
           value={ tag }
           onChange={ this.handleChange }
         >
@@ -131,15 +156,22 @@ class WalletForm extends Component {
           <option>Transporte</option>
           <option>Saúde</option>
         </select>
-        <input
-          type="text"
-          data-testid="description-input"
-          name="description"
-          value={ description }
-          onChange={ this.handleChange }
-        />
+        <label htmlFor="description" className="walletLabel">
+          Descrição:
+          <input
+            type="text"
+            id="description"
+            data-testid="description-input"
+            className="walletInputs"
+            placeholder="Ex: 2 pizzas"
+            name="description"
+            value={ description }
+            onChange={ this.handleChange }
+          />
+        </label>
         <button
           type="submit"
+          className={ className }
           onClick={ this.handleClick }
         >
           { stateEditor ? 'Editar despesa' : 'Adicionar despesa'}

@@ -1,7 +1,10 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
+// import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { addUser } from '../redux/actions';
+import '../styles/App.css';
+import '../styles/Login.css';
 
 class Login extends React.Component {
   constructor() {
@@ -11,6 +14,7 @@ class Login extends React.Component {
       email: '',
       senha: '',
       isDisabled: true,
+      className: 'loginButton disabled',
     };
   }
 
@@ -20,9 +24,9 @@ class Login extends React.Component {
     this.setState({ [name]: value }, () => {
       const { email, senha } = this.state;
       if (email.includes('@') && email.includes('.com') && senha.length >= SEIS) {
-        this.setState({ isDisabled: false });
+        this.setState({ isDisabled: false, className: 'loginButton' });
       } else {
-        this.setState({ isDisabled: true });
+        this.setState({ isDisabled: true, className: 'loginButton disabled' });
       }
     });
   };
@@ -36,33 +40,51 @@ class Login extends React.Component {
   };
 
   render() {
-    const { email, senha, isDisabled } = this.state;
+    const { email, senha, isDisabled, className } = this.state;
     return (
       <form
+        className="login"
         onSubmit={ this.handleSubmit }
       >
-        <h2>Login</h2>
-        <input
-          type="email"
-          name="email"
-          value={ email }
-          data-testid="email-input"
-          onChange={ this.handleChange }
-        />
-        <h2>Senha</h2>
-        <input
-          type="password"
-          name="senha"
-          value={ senha }
-          data-testid="password-input"
-          onChange={ this.handleChange }
-        />
-        <button
-          type="submit"
-          disabled={ isDisabled }
+        <div
+          className="loginForm"
         >
-          Entrar
-        </button>
+          <h1>TRYBEWALLET</h1>
+          <label htmlFor="email" className="loginLabel">
+            Login
+            <input
+              id="email"
+              type="text"
+              className="loginInputs"
+              placeholder="Email"
+              name="email"
+              value={ email }
+              data-testid="email-input"
+              onChange={ this.handleChange }
+            />
+          </label>
+          <label htmlFor="senha" className="loginLabel">
+            Senha
+            <input
+              id="senha"
+              type="password"
+              className="loginInputs"
+              name="senha"
+              placeholder="Senha"
+              value={ senha }
+              data-testid="password-input"
+              onChange={ this.handleChange }
+            />
+          </label>
+          <br />
+          <button
+            className={ className }
+            type="submit"
+            disabled={ isDisabled }
+          >
+            ENTRAR
+          </button>
+        </div>
       </form>
     );
   }
