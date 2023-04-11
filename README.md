@@ -15,7 +15,8 @@ Não deixe de usar nossas dicas de escrita de README de projetos, e deixe sua cr
 # Bem-vindo ao repositório do projeto Trybe Wallet
 
 <ul align="justify">
-  <li>Projeto onde fui responsável pelo frontend e pelos testes de algumas funções. A aplicação funciona como um gerenciador de finanças pessoais com várias moedas mundiais. Baseado em JavaScript desenvolvido em ReactJS e Redux para a persistência de dados e obter a contação das moedas em uma API de cotações. </li>
+  <li>Projeto onde fui responsável pelo frontend e pelos testes de algumas funções. Os demais componentes são de autoria da Trybe.
+  A aplicação funciona como um gerenciador de finanças pessoais com várias moedas mundiais. Baseado em JavaScript desenvolvido em ReactJS e Redux para a persistência de dados e obter a contação das moedas em uma API de cotações. </li>
 </ul>
 
 ### Instalação
