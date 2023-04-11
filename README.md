@@ -57,5 +57,6 @@ Não deixe de usar nossas dicas de escrita de README de projetos, e deixe sua cr
 
 - ReactJS
 - Redux
+- Jest (para os testes)
 - API de cotações de moedas internacionais
 
