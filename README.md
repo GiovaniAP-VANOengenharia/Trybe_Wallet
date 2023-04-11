@@ -23,10 +23,22 @@ Não deixe de usar nossas dicas de escrita de README de projetos, e deixe sua cr
 # Para executar a aplicação localmente, siga estes passos:
 
 
-  - Clone o repositório em seu computador: `git clone https://github.com/GiovaniAP-VANOEngenharia/Trybe_Wallet.git`
-  - Acesse o diretório do projeto: `cd Trybe_Wallet`
-  - Instale as dependências: `$ npm install`
-  - Execute a aplicação: `npm start`
+  - Clone o repositório em seu computador:
+  ```bash
+  git clone https://github.com/GiovaniAP-VANOEngenharia/Trybe_Wallet.git
+  ```
+  - Acesse o diretório do projeto:
+  ```bash
+  cd Trybe_Wallet
+  ```
+  - Instale as dependências:
+  ```bash
+  npm install
+  ```
+  - Execute a aplicação:
+  ```bash
+  npm start
+  ```
   - A aplicação estará disponível em `http://localhost:3000`
 
 ## Utilização
