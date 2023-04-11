@@ -14,28 +14,12 @@ class Table extends Component {
             <tr className="tableHead">
               <th className="description">Descrição</th>
               <th className="description">Tag</th>
-              <th className="description">
-                Método de
-                <br />
-                pagamento
-              </th>
+              <th className="description">{'Método de\npagamento'}</th>
               <th className="description">Valor</th>
               <th className="description">Moeda</th>
-              <th className="description">
-                Câmbio
-                <br />
-                utilizado
-              </th>
-              <th className="description">
-                Valor
-                <br />
-                convertido
-              </th>
-              <th className="description">
-                Moeda de
-                <br />
-                conversão
-              </th>
+              <th className="description">{'Câbio\nutilizado'}</th>
+              <th className="description">{'Valor\nconvertido'}</th>
+              <th className="description">{'Moeda de\nconversão'}</th>
               <th className="description">Editar/Excluir</th>
             </tr>
           </thead>
